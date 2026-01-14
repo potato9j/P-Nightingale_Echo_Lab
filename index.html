@@ -1,0 +1,1574 @@
+﻿
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nightingale Whistle Matching Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0c10;
+      --panel: rgba(16, 20, 26, 0.92);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text: #f2f5f7;
+      --muted: rgba(242, 245, 247, 0.62);
+      --accent: #f5c46b;
+      --accent-2: #79d9f7;
+      --accent-3: #f28d77;
+      --grid: rgba(255, 255, 255, 0.08);
+      --card: rgba(12, 15, 20, 0.9);
+      --shadow: 0 22px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      background: radial-gradient(circle at top, #121721 0%, #07090d 45%, #05060a 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(242, 141, 119, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 10%, rgba(121, 217, 247, 0.2), transparent 40%),
+        radial-gradient(circle at 70% 80%, rgba(245, 196, 107, 0.18), transparent 45%);
+      pointer-events: none;
+      opacity: 0.85;
+      z-index: -1;
+    }
+
+    .frame {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 8px 0 12px;
+      font-size: clamp(30px, 4vw, 44px);
+      font-family: "Fraunces", serif;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 540px;
+    }
+
+    .hero-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-title {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .hero-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(270px, 320px) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      position: sticky;
+      top: 20px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(8, 10, 14, 0.7);
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    button {
+      background: rgba(11, 15, 20, 0.9);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      border-color: rgba(245, 196, 107, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    select,
+    input[type="file"] {
+      background: rgba(8, 10, 14, 0.7);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .value {
+      min-width: 52px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status.error {
+      color: #ffb3b3;
+    }
+
+    .meter {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.1s ease;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 12px;
+      font-size: 12px;
+    }
+
+    .metric-grid span {
+      color: var(--muted);
+    }
+
+    .metric-grid strong {
+      display: block;
+      font-size: 16px;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .viz {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-header h2,
+    .card-header h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .card-header p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-c1 {
+      background: var(--accent);
+    }
+
+    .dot-c2 {
+      background: var(--accent-2);
+    }
+
+    .dot-c3 {
+      background: var(--accent-3);
+    }
+
+    .dot-live {
+      background: #f9d87b;
+      box-shadow: 0 0 12px rgba(249, 216, 123, 0.7);
+    }
+
+    .dot-model {
+      background: #7be1ff;
+    }
+
+    .dot-target {
+      background: #ff917c;
+    }
+
+    .viz-main canvas {
+      width: 100%;
+      height: 380px;
+      display: block;
+      border-radius: 16px;
+      background: rgba(6, 8, 12, 0.75);
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .viz-grid canvas {
+      width: 100%;
+      height: 180px;
+      display: block;
+      border-radius: 14px;
+      background: rgba(8, 10, 14, 0.72);
+    }
+
+    .similarity {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sim-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 50px;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sim-row strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    audio,
+    video {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        position: relative;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="frame">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Current Biology 2026</div>
+        <h1>Nightingale Whistle Matching Lab</h1>
+        <p class="subtitle">
+          야생 나이팅게일의 휘슬 모방 행동을 실시간으로 해석합니다.
+          업로드한 새 울음 파일의 피치와 지속시간을 추적하고, 논문에서 제시한
+          “Duration → Pitch” 계층 모델과의 관계를 시각화합니다.
+        </p>
+      </div>
+      <div class="hero-card">
+        <div class="hero-title">논문 핵심 흐름</div>
+        <ul class="hero-list">
+          <li>휘슬 지속시간은 짧음-중간-김(0.14 s, 0.31 s 경계)으로 군집합니다.</li>
+          <li>비정상 조합 자극에서는 피치와 지속시간 중 하나만 강하게 모방합니다.</li>
+          <li>모델은 지속시간이 먼저 반응 공간을 제한하고, 피치가 뒤따릅니다.</li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel">
+        <section class="panel-section">
+          <div class="panel-title">입력</div>
+          <div class="row">
+            <label class="chip"><input type="radio" name="inputMode" value="mic" checked />마이크</label>
+            <label class="chip"><input type="radio" name="inputMode" value="file" />파일</label>
+          </div>
+          <div class="row">
+            <button id="micToggle">마이크 시작</button>
+            <span id="micState" class="status">마이크 OFF</span>
+          </div>
+          <div class="row">
+            <input id="fileInput" type="file" accept="audio/*,video/*" />
+            <button id="filePlay">재생</button>
+          </div>
+          <div class="row">
+            <span id="fileState" class="status">파일 없음</span>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="panel-title">Playback 목표</div>
+          <div class="row">
+            <select id="playbackPreset">
+              <option value="live">Live 입력 = playback</option>
+              <option value="high-short" selected>High pitch + short duration</option>
+              <option value="high-long">High pitch + long duration</option>
+              <option value="low-long">Low pitch + long duration</option>
+              <option value="custom">커스텀</option>
+            </select>
+          </div>
+          <div class="row">
+            <label class="status">Target Pitch (kHz)</label>
+            <input id="targetPitch" type="range" min="1" max="9" step="0.1" value="7" />
+            <span id="targetPitchVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Target Duration (s)</label>
+            <input id="targetDuration" type="range" min="0.04" max="0.9" step="0.01" value="0.14" />
+            <span id="targetDurationVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Hierarchy</label>
+            <select id="hierarchyMode">
+              <option value="duration-first" selected>Duration → Pitch</option>
+              <option value="pitch-first">Pitch → Duration</option>
+            </select>
+          </div>
+          <div class="note">
+            논문에서 실험한 3가지 자극 조합(고피치-짧음, 고피치-김, 저피치-김)을
+            미리 선택할 수 있습니다.
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="panel-title">분석</div>
+          <div class="row">
+            <label class="status">FFT</label>
+            <select id="fftSize">
+              <option value="1024">1024</option>
+              <option value="2048" selected>2048</option>
+              <option value="4096">4096</option>
+            </select>
+          </div>
+          <div class="row">
+            <label class="status">EMA</label>
+            <input id="smoothing" type="range" min="0.05" max="0.6" step="0.01" value="0.2" />
+            <span id="smoothingVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Gate</label>
+            <input id="gate" type="range" min="0.02" max="0.35" step="0.01" value="0.12" />
+            <span id="gateVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Duration Max</label>
+            <input id="durMax" type="range" min="0.6" max="1.2" step="0.05" value="0.9" />
+            <span id="durMaxVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Pitch Max (kHz)</label>
+            <input id="pitchMax" type="range" min="6" max="12" step="0.5" value="9" />
+            <span id="pitchMaxVal" class="value"></span>
+          </div>
+        </section>
+        <section class="panel-section">
+          <div class="panel-title">모델 파라미터</div>
+          <div class="row">
+            <label class="status">Duration α</label>
+            <input id="durGain" type="range" min="0" max="2" step="0.05" value="1.1" />
+            <span id="durGainVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Pitch α</label>
+            <input id="pitchGain" type="range" min="0" max="2" step="0.05" value="1.0" />
+            <span id="pitchGainVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">Drive β</label>
+            <input id="matchDrive" type="range" min="0" max="1" step="0.02" value="0.6" />
+            <span id="matchDriveVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">σ (Dur)</label>
+            <input id="durSigma" type="range" min="0.04" max="0.2" step="0.01" value="0.08" />
+            <span id="durSigmaVal" class="value"></span>
+          </div>
+          <div class="row">
+            <label class="status">σ (Pitch)</label>
+            <input id="pitchSigma" type="range" min="0.3" max="2.0" step="0.1" value="0.8" />
+            <span id="pitchSigmaVal" class="value"></span>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="panel-title">실시간 측정</div>
+          <div class="metric-grid">
+            <div>
+              <span>Pitch</span>
+              <strong id="pitchValue">0.00 kHz</strong>
+            </div>
+            <div>
+              <span>Duration</span>
+              <strong id="durationValue">0.00 s</strong>
+            </div>
+            <div>
+              <span>Cluster</span>
+              <strong id="clusterValue">-</strong>
+            </div>
+            <div>
+              <span>Hierarchy Drive</span>
+              <strong id="driveValue">0.00</strong>
+            </div>
+          </div>
+          <div class="meter">
+            <div id="levelFill"></div>
+          </div>
+          <div class="row">
+            <span id="levelValue" class="status">0.00</span>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="panel-title">상태</div>
+          <div id="status" class="status">입력을 선택하고 재생하세요.</div>
+          <div class="note">피치 추정은 FFT 피크 기반이며 휘슬에 최적화되어 있습니다.</div>
+        </section>
+      </aside>
+
+      <section class="viz">
+        <div class="card viz-main">
+          <div class="card-header">
+            <div>
+              <h2>Soundspace</h2>
+              <p>Duration (x) × Pitch (y) · C1/C2/C3 군집</p>
+            </div>
+            <div class="legend">
+              <span><i class="legend-dot dot-c1"></i>C1</span>
+              <span><i class="legend-dot dot-c2"></i>C2</span>
+              <span><i class="legend-dot dot-c3"></i>C3</span>
+              <span><i class="legend-dot dot-live"></i>Live</span>
+              <span><i class="legend-dot dot-model"></i>Model</span>
+              <span><i class="legend-dot dot-target"></i>Target</span>
+            </div>
+          </div>
+          <canvas id="soundspace"></canvas>
+          <div class="note">점은 실시간 측정값과 모델 예측의 관계를 보여줍니다.</div>
+        </div>
+
+        <div class="viz-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>Duration GMM</h3>
+              <p>0.112 · 0.222 · 0.444 s</p>
+            </div>
+            <canvas id="durationChart"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Pitch GMM</h3>
+              <p>1~9 kHz components</p>
+            </div>
+            <canvas id="pitchChart"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Waveform</h3>
+              <p>Gate 기반 syllable 길이</p>
+            </div>
+            <canvas id="waveChart"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>Similarity</h3>
+              <p>Target과의 거리</p>
+            </div>
+            <div class="similarity">
+              <div class="sim-row">
+                <span>Duration</span>
+                <div class="meter"><div id="durationSimFill"></div></div>
+                <strong id="durationSimVal">0.00</strong>
+              </div>
+              <div class="sim-row">
+                <span>Pitch</span>
+                <div class="meter"><div id="pitchSimFill"></div></div>
+                <strong id="pitchSimVal">0.00</strong>
+              </div>
+              <div class="sim-row">
+                <span>Bias</span>
+                <div class="meter"><div id="biasFill"></div></div>
+                <strong id="biasVal">0.00</strong>
+              </div>
+            </div>
+            <div class="note">Bias가 양수면 피치 매칭, 음수면 지속시간 매칭 경향.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <audio id="audioEl" crossorigin="anonymous"></audio>
+  <video id="videoEl" playsinline crossorigin="anonymous"></video>
+
+  <script>
+    const ui = {
+      micToggle: document.getElementById('micToggle'),
+      micState: document.getElementById('micState'),
+      fileInput: document.getElementById('fileInput'),
+      filePlay: document.getElementById('filePlay'),
+      fileState: document.getElementById('fileState'),
+      playbackPreset: document.getElementById('playbackPreset'),
+      targetPitch: document.getElementById('targetPitch'),
+      targetPitchVal: document.getElementById('targetPitchVal'),
+      targetDuration: document.getElementById('targetDuration'),
+      targetDurationVal: document.getElementById('targetDurationVal'),
+      hierarchyMode: document.getElementById('hierarchyMode'),
+      fftSize: document.getElementById('fftSize'),
+      smoothing: document.getElementById('smoothing'),
+      smoothingVal: document.getElementById('smoothingVal'),
+      gate: document.getElementById('gate'),
+      gateVal: document.getElementById('gateVal'),
+      durMax: document.getElementById('durMax'),
+      durMaxVal: document.getElementById('durMaxVal'),
+      pitchMax: document.getElementById('pitchMax'),
+      pitchMaxVal: document.getElementById('pitchMaxVal'),
+      durGain: document.getElementById('durGain'),
+      durGainVal: document.getElementById('durGainVal'),
+      pitchGain: document.getElementById('pitchGain'),
+      pitchGainVal: document.getElementById('pitchGainVal'),
+      matchDrive: document.getElementById('matchDrive'),
+      matchDriveVal: document.getElementById('matchDriveVal'),
+      durSigma: document.getElementById('durSigma'),
+      durSigmaVal: document.getElementById('durSigmaVal'),
+      pitchSigma: document.getElementById('pitchSigma'),
+      pitchSigmaVal: document.getElementById('pitchSigmaVal'),
+      pitchValue: document.getElementById('pitchValue'),
+      durationValue: document.getElementById('durationValue'),
+      clusterValue: document.getElementById('clusterValue'),
+      driveValue: document.getElementById('driveValue'),
+      levelFill: document.getElementById('levelFill'),
+      levelValue: document.getElementById('levelValue'),
+      durationSimFill: document.getElementById('durationSimFill'),
+      pitchSimFill: document.getElementById('pitchSimFill'),
+      biasFill: document.getElementById('biasFill'),
+      durationSimVal: document.getElementById('durationSimVal'),
+      pitchSimVal: document.getElementById('pitchSimVal'),
+      biasVal: document.getElementById('biasVal'),
+      status: document.getElementById('status'),
+      soundspace: document.getElementById('soundspace'),
+      durationChart: document.getElementById('durationChart'),
+      pitchChart: document.getElementById('pitchChart'),
+      waveChart: document.getElementById('waveChart'),
+    };
+
+    const settings = {
+      fftSize: 2048,
+      smoothing: 0.2,
+      gate: 0.12,
+      durationMax: 0.9,
+      pitchMax: 9,
+      durGain: 1.1,
+      pitchGain: 1.0,
+      matchDrive: 0.6,
+      durSigma: 0.08,
+      pitchSigma: 0.8,
+      hierarchy: 'duration-first',
+      playbackMode: 'preset',
+      targetPitch: 7,
+      targetDuration: 0.14,
+    };
+
+    const constants = {
+      durationMin: 0.04,
+      pitchMin: 0.3,
+      durationBoundary: 0.31,
+      pitchBoundary: 4.8,
+    };
+
+    const state = {
+      audioContext: null,
+      analyser: null,
+      outputGain: null,
+      activeSourceNode: null,
+      audioSourceNode: null,
+      videoSourceNode: null,
+      mediaStream: null,
+      activeElement: null,
+      objectUrl: null,
+      inputActive: false,
+      freqData: null,
+      timeData: null,
+      sampleRate: 48000,
+      smoothPitch: 3.2,
+      smoothDuration: 0.14,
+      lastDuration: 0.14,
+      gateOpen: false,
+      gateStart: 0,
+      rmsSmooth: 0,
+      trail: [],
+      recentDurations: [],
+    };
+
+    const audioEl = document.getElementById('audioEl');
+    const videoEl = document.getElementById('videoEl');
+
+    const charts = {
+      soundspace: setupCanvas(ui.soundspace),
+      duration: setupCanvas(ui.durationChart),
+      pitch: setupCanvas(ui.pitchChart),
+      wave: setupCanvas(ui.waveChart),
+    };
+
+    const durationModel = createModel({
+      name: 'duration',
+      means: [0.112, 0.222, 0.444],
+      weights: [0.34, 0.33, 0.33],
+    });
+
+    const pitchModel = createModel({
+      name: 'pitch',
+      means: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      weights: Array(9).fill(1 / 9),
+    });
+
+    bindUI();
+    syncUI();
+    updatePlaybackPreset();
+    animate();
+
+    function setupCanvas(canvas) {
+      const ctx = canvas.getContext('2d');
+      const resize = () => {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      resize();
+      return { canvas, ctx, resize };
+    }
+
+    if (window.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(() => {
+        Object.values(charts).forEach((chart) => chart.resize());
+      });
+
+      Object.values(charts).forEach((chart) => resizeObserver.observe(chart.canvas));
+    } else {
+      window.addEventListener('resize', () => {
+        Object.values(charts).forEach((chart) => chart.resize());
+      });
+    }
+
+    function bindUI() {
+      ui.fftSize.addEventListener('change', () => {
+        settings.fftSize = parseInt(ui.fftSize.value, 10);
+        applyFftSize();
+      });
+
+      ui.smoothing.addEventListener('input', () => {
+        settings.smoothing = parseFloat(ui.smoothing.value);
+        ui.smoothingVal.textContent = settings.smoothing.toFixed(2);
+      });
+
+      ui.gate.addEventListener('input', () => {
+        settings.gate = parseFloat(ui.gate.value);
+        ui.gateVal.textContent = settings.gate.toFixed(2);
+      });
+
+      ui.durMax.addEventListener('input', () => {
+        settings.durationMax = parseFloat(ui.durMax.value);
+        ui.durMaxVal.textContent = settings.durationMax.toFixed(2);
+      });
+
+      ui.pitchMax.addEventListener('input', () => {
+        settings.pitchMax = parseFloat(ui.pitchMax.value);
+        ui.pitchMaxVal.textContent = settings.pitchMax.toFixed(1);
+      });
+
+      ui.durGain.addEventListener('input', () => {
+        settings.durGain = parseFloat(ui.durGain.value);
+        ui.durGainVal.textContent = settings.durGain.toFixed(2);
+      });
+
+      ui.pitchGain.addEventListener('input', () => {
+        settings.pitchGain = parseFloat(ui.pitchGain.value);
+        ui.pitchGainVal.textContent = settings.pitchGain.toFixed(2);
+      });
+
+      ui.matchDrive.addEventListener('input', () => {
+        settings.matchDrive = parseFloat(ui.matchDrive.value);
+        ui.matchDriveVal.textContent = settings.matchDrive.toFixed(2);
+      });
+
+      ui.durSigma.addEventListener('input', () => {
+        settings.durSigma = parseFloat(ui.durSigma.value);
+        ui.durSigmaVal.textContent = settings.durSigma.toFixed(2);
+      });
+
+      ui.pitchSigma.addEventListener('input', () => {
+        settings.pitchSigma = parseFloat(ui.pitchSigma.value);
+        ui.pitchSigmaVal.textContent = settings.pitchSigma.toFixed(1);
+      });
+
+      ui.playbackPreset.addEventListener('change', updatePlaybackPreset);
+
+      ui.targetPitch.addEventListener('input', () => {
+        ensureCustomPreset();
+        settings.targetPitch = parseFloat(ui.targetPitch.value);
+        ui.targetPitchVal.textContent = settings.targetPitch.toFixed(1);
+      });
+
+      ui.targetDuration.addEventListener('input', () => {
+        ensureCustomPreset();
+        settings.targetDuration = parseFloat(ui.targetDuration.value);
+        ui.targetDurationVal.textContent = settings.targetDuration.toFixed(2);
+      });
+
+      ui.hierarchyMode.addEventListener('change', () => {
+        settings.hierarchy = ui.hierarchyMode.value;
+      });
+
+      ui.micToggle.addEventListener('click', async () => {
+        if (state.mediaStream) {
+          stopMic();
+          return;
+        }
+        setInputMode('mic');
+        await startMic();
+      });
+
+      ui.fileInput.addEventListener('change', () => {
+        const file = ui.fileInput.files && ui.fileInput.files[0];
+        if (!file) {
+          return;
+        }
+        setInputMode('file');
+        loadFile(file);
+      });
+
+      ui.filePlay.addEventListener('click', async () => {
+        setInputMode('file');
+        await toggleFilePlayback();
+      });
+
+      audioEl.addEventListener('ended', () => {
+        state.inputActive = false;
+        ui.filePlay.textContent = '재생';
+      });
+
+      videoEl.addEventListener('ended', () => {
+        state.inputActive = false;
+        ui.filePlay.textContent = '재생';
+      });
+
+      const radios = document.querySelectorAll('input[name="inputMode"]');
+      radios.forEach((radio) => {
+        radio.addEventListener('change', () => {
+          setInputMode(getInputMode());
+        });
+      });
+    }
+
+    function syncUI() {
+      ui.smoothingVal.textContent = settings.smoothing.toFixed(2);
+      ui.gateVal.textContent = settings.gate.toFixed(2);
+      ui.durMaxVal.textContent = settings.durationMax.toFixed(2);
+      ui.pitchMaxVal.textContent = settings.pitchMax.toFixed(1);
+      ui.durGainVal.textContent = settings.durGain.toFixed(2);
+      ui.pitchGainVal.textContent = settings.pitchGain.toFixed(2);
+      ui.matchDriveVal.textContent = settings.matchDrive.toFixed(2);
+      ui.durSigmaVal.textContent = settings.durSigma.toFixed(2);
+      ui.pitchSigmaVal.textContent = settings.pitchSigma.toFixed(1);
+      ui.targetPitchVal.textContent = settings.targetPitch.toFixed(1);
+      ui.targetDurationVal.textContent = settings.targetDuration.toFixed(2);
+    }
+
+    function setStatus(message, isError = false) {
+      ui.status.textContent = message;
+      ui.status.classList.toggle('error', isError);
+    }
+
+    function getInputMode() {
+      const selected = document.querySelector('input[name="inputMode"]:checked');
+      return selected ? selected.value : 'mic';
+    }
+
+    function setInputMode(mode) {
+      const target = document.querySelector(`input[name="inputMode"][value="${mode}"]`);
+      if (target) {
+        target.checked = true;
+      }
+
+      if (mode === 'mic') {
+        stopFilePlayback();
+      } else {
+        stopMic();
+      }
+    }
+
+    function ensureCustomPreset() {
+      if (ui.playbackPreset.value !== 'custom') {
+        ui.playbackPreset.value = 'custom';
+        updatePlaybackPreset();
+      }
+    }
+
+    function updatePlaybackPreset() {
+      const preset = ui.playbackPreset.value;
+      let disableTargets = false;
+
+      if (preset === 'live') {
+        settings.playbackMode = 'live';
+        disableTargets = true;
+        setStatus('Playback 목표가 실시간 입력과 동기화됩니다.');
+      } else if (preset === 'high-short') {
+        settings.playbackMode = 'preset';
+        settings.targetPitch = 7;
+        settings.targetDuration = 0.14;
+      } else if (preset === 'high-long') {
+        settings.playbackMode = 'preset';
+        settings.targetPitch = 7;
+        settings.targetDuration = 0.7;
+      } else if (preset === 'low-long') {
+        settings.playbackMode = 'preset';
+        settings.targetPitch = 2;
+        settings.targetDuration = 0.7;
+      } else {
+        settings.playbackMode = 'custom';
+      }
+
+      ui.targetPitch.value = settings.targetPitch;
+      ui.targetDuration.value = settings.targetDuration;
+      ui.targetPitchVal.textContent = settings.targetPitch.toFixed(1);
+      ui.targetDurationVal.textContent = settings.targetDuration.toFixed(2);
+      ui.targetPitch.disabled = disableTargets;
+      ui.targetDuration.disabled = disableTargets;
+    }
+    async function ensureAudioContext() {
+      if (state.audioContext) {
+        if (state.audioContext.state === 'suspended') {
+          await state.audioContext.resume();
+        }
+        return;
+      }
+
+      state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      state.analyser = state.audioContext.createAnalyser();
+      state.analyser.fftSize = settings.fftSize;
+      state.analyser.smoothingTimeConstant = 0.0;
+      state.sampleRate = state.audioContext.sampleRate;
+      state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
+      state.timeData = new Uint8Array(state.analyser.fftSize);
+      state.outputGain = state.audioContext.createGain();
+      state.analyser.connect(state.outputGain);
+      state.outputGain.connect(state.audioContext.destination);
+    }
+
+    function applyFftSize() {
+      if (!state.analyser) {
+        return;
+      }
+      state.analyser.fftSize = settings.fftSize;
+      state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
+      state.timeData = new Uint8Array(state.analyser.fftSize);
+    }
+
+    async function startMic() {
+      try {
+        await ensureAudioContext();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        state.mediaStream = stream;
+        disconnectActiveSource();
+        state.activeSourceNode = state.audioContext.createMediaStreamSource(stream);
+        state.activeSourceNode.connect(state.analyser);
+        state.outputGain.gain.value = 0;
+        state.inputActive = true;
+        ui.micToggle.textContent = '마이크 중지';
+        ui.micState.textContent = '마이크 ON';
+        setStatus('마이크 입력을 분석 중입니다.');
+      } catch (error) {
+        setStatus('마이크 권한을 확인해 주세요.', true);
+      }
+    }
+
+    function stopMic() {
+      if (state.mediaStream) {
+        state.mediaStream.getTracks().forEach((track) => track.stop());
+        state.mediaStream = null;
+      }
+      disconnectActiveSource();
+      state.inputActive = false;
+      ui.micToggle.textContent = '마이크 시작';
+      ui.micState.textContent = '마이크 OFF';
+    }
+
+    function disconnectActiveSource() {
+      if (state.activeSourceNode) {
+        state.activeSourceNode.disconnect();
+        state.activeSourceNode = null;
+      }
+    }
+
+    function loadFile(file) {
+      const isAudio = file.type.startsWith('audio/');
+      const isVideo = file.type.startsWith('video/');
+      if (!isAudio && !isVideo) {
+        setStatus('지원하지 않는 파일 형식입니다.', true);
+        return;
+      }
+
+      if (state.objectUrl) {
+        URL.revokeObjectURL(state.objectUrl);
+      }
+      state.objectUrl = URL.createObjectURL(file);
+
+      if (isVideo) {
+        state.activeElement = videoEl;
+        videoEl.src = state.objectUrl;
+        videoEl.load();
+      } else {
+        state.activeElement = audioEl;
+        audioEl.src = state.objectUrl;
+        audioEl.load();
+      }
+
+      ui.fileState.textContent = file.name;
+      ui.filePlay.textContent = '재생';
+      setStatus('파일을 불러왔습니다. 재생을 시작하세요.');
+    }
+
+    async function toggleFilePlayback() {
+      if (!state.activeElement) {
+        setStatus('먼저 파일을 선택하세요.', true);
+        return;
+      }
+
+      try {
+        await ensureAudioContext();
+        stopMic();
+        connectActiveMedia();
+
+        if (state.activeElement.paused) {
+          await state.activeElement.play();
+          state.inputActive = true;
+          ui.filePlay.textContent = '일시정지';
+          setStatus('파일을 재생 중입니다.');
+        } else {
+          state.activeElement.pause();
+          state.inputActive = false;
+          ui.filePlay.textContent = '재생';
+          setStatus('파일 재생을 일시정지했습니다.');
+        }
+      } catch (error) {
+        setStatus('파일 재생에 실패했습니다.', true);
+      }
+    }
+
+    function stopFilePlayback() {
+      if (state.activeElement) {
+        state.activeElement.pause();
+        disconnectActiveSource();
+      }
+      state.inputActive = false;
+      ui.filePlay.textContent = '재생';
+    }
+
+    function connectActiveMedia() {
+      if (!state.audioContext || !state.analyser || !state.activeElement) {
+        return;
+      }
+
+      disconnectActiveSource();
+
+      if (state.activeElement === audioEl) {
+        if (!state.audioSourceNode) {
+          state.audioSourceNode = state.audioContext.createMediaElementSource(audioEl);
+        }
+        state.activeSourceNode = state.audioSourceNode;
+      } else {
+        if (!state.videoSourceNode) {
+          state.videoSourceNode = state.audioContext.createMediaElementSource(videoEl);
+        }
+        state.activeSourceNode = state.videoSourceNode;
+      }
+
+      state.activeSourceNode.connect(state.analyser);
+      state.outputGain.gain.value = 1.0;
+    }
+    function createModel({ name, means, weights }) {
+      return {
+        name,
+        count: means.length,
+        means: Float32Array.from(means),
+        baseWeights: Float32Array.from(weights),
+        weights: Float32Array.from(weights),
+        targetWeights: new Float32Array(means.length),
+      };
+    }
+
+    function updateModel(model, stimulus, gain, sigma, drive) {
+      const count = model.count;
+      let sum = 0;
+      for (let i = 0; i < count; i += 1) {
+        const d = stimulus - model.means[i];
+        const attract = Math.exp(-(d * d) / (2 * sigma * sigma));
+        model.targetWeights[i] = model.baseWeights[i] * (1 + gain * attract);
+        sum += model.targetWeights[i];
+      }
+
+      if (sum === 0) {
+        sum = 1;
+      }
+
+      const blend = 0.18 + 0.65 * drive;
+      for (let i = 0; i < count; i += 1) {
+        const normalized = model.targetWeights[i] / sum;
+        model.weights[i] += (normalized - model.weights[i]) * blend;
+      }
+
+      let total = 0;
+      for (let i = 0; i < count; i += 1) {
+        total += model.weights[i];
+      }
+      if (total === 0) {
+        total = 1;
+      }
+      for (let i = 0; i < count; i += 1) {
+        model.weights[i] /= total;
+      }
+    }
+
+    function estimateModel(model) {
+      let value = 0;
+      for (let i = 0; i < model.count; i += 1) {
+        value += model.weights[i] * model.means[i];
+      }
+      return value;
+    }
+
+    function updateAudioFeatures() {
+      if (!state.analyser || !state.freqData || !state.timeData || !state.audioContext) {
+        return {
+          pitchKHz: state.smoothPitch,
+          duration: state.smoothDuration,
+          rms: 0,
+        };
+      }
+
+      if (state.inputActive) {
+        state.analyser.getByteFrequencyData(state.freqData);
+        state.analyser.getByteTimeDomainData(state.timeData);
+      } else {
+        state.freqData.fill(0);
+        state.timeData.fill(128);
+      }
+
+      let sum = 0;
+      for (let i = 0; i < state.timeData.length; i += 1) {
+        const v = (state.timeData[i] - 128) / 128;
+        sum += v * v;
+      }
+      const rms = Math.sqrt(sum / state.timeData.length);
+      state.rmsSmooth += (rms - state.rmsSmooth) * 0.15;
+
+      const now = state.audioContext.currentTime;
+      if (state.rmsSmooth > settings.gate) {
+        if (!state.gateOpen) {
+          state.gateOpen = true;
+          state.gateStart = now;
+        }
+        state.lastDuration = Math.min(settings.durationMax, now - state.gateStart);
+      } else if (state.gateOpen) {
+        state.gateOpen = false;
+        state.recentDurations.push(state.lastDuration);
+        if (state.recentDurations.length > 50) {
+          state.recentDurations.shift();
+        }
+      } else {
+        state.lastDuration = Math.max(constants.durationMin, state.lastDuration - 0.01);
+      }
+
+      let peakIndex = 0;
+      let peakValue = 0;
+      for (let i = 0; i < state.freqData.length; i += 1) {
+        if (state.freqData[i] > peakValue) {
+          peakValue = state.freqData[i];
+          peakIndex = i;
+        }
+      }
+
+      let peakFreq = (peakIndex * state.sampleRate) / settings.fftSize;
+      if (peakValue < 4) {
+        peakFreq = state.smoothPitch * 1000;
+      }
+
+      const pitchKHz = peakFreq / 1000;
+      state.smoothPitch = ema(state.smoothPitch, pitchKHz, settings.smoothing);
+      state.smoothDuration = ema(state.smoothDuration, state.lastDuration, settings.smoothing);
+
+      if (!state.inputActive) {
+        state.smoothPitch += (3 - state.smoothPitch) * 0.01;
+        state.smoothDuration += (0.2 - state.smoothDuration) * 0.01;
+      }
+
+      return {
+        pitchKHz: clamp(state.smoothPitch, constants.pitchMin, settings.pitchMax),
+        duration: clamp(state.smoothDuration, constants.durationMin, settings.durationMax),
+        rms: state.rmsSmooth,
+      };
+    }
+
+    function getStimulus(features) {
+      if (settings.playbackMode === 'live') {
+        return {
+          pitchKHz: features.pitchKHz,
+          duration: features.duration,
+        };
+      }
+      return {
+        pitchKHz: settings.targetPitch,
+        duration: settings.targetDuration,
+      };
+    }
+
+    function classifyCluster(duration, pitchKHz) {
+      if (pitchKHz >= constants.pitchBoundary) {
+        return 'C2 (high pitch)';
+      }
+      if (duration >= constants.durationBoundary) {
+        return 'C3 (low pitch / long)';
+      }
+      return 'C1 (low pitch / short)';
+    }
+
+    function similarity(error, mid, slope) {
+      const safeSlope = Math.max(0.001, slope);
+      return 1 / (1 + Math.exp((error - mid) / safeSlope));
+    }
+    function animate() {
+      requestAnimationFrame(animate);
+      const features = updateAudioFeatures();
+      const stimulus = getStimulus(features);
+
+      let driveValue = 1;
+      let durationEstimate = features.duration;
+      let pitchEstimate = features.pitchKHz;
+
+      if (settings.hierarchy === 'duration-first') {
+        updateModel(durationModel, stimulus.duration, settings.durGain, settings.durSigma, 1);
+        durationEstimate = estimateModel(durationModel);
+        const durationMatch = Math.exp(-Math.abs(stimulus.duration - durationEstimate) / 0.1);
+        driveValue = settings.matchDrive * durationMatch;
+        updateModel(pitchModel, stimulus.pitchKHz, settings.pitchGain, settings.pitchSigma, driveValue);
+        pitchEstimate = estimateModel(pitchModel);
+      } else {
+        updateModel(pitchModel, stimulus.pitchKHz, settings.pitchGain, settings.pitchSigma, 1);
+        pitchEstimate = estimateModel(pitchModel);
+        const pitchMatch = Math.exp(-Math.abs(stimulus.pitchKHz - pitchEstimate) / 1.2);
+        driveValue = settings.matchDrive * pitchMatch;
+        updateModel(durationModel, stimulus.duration, settings.durGain, settings.durSigma, driveValue);
+        durationEstimate = estimateModel(durationModel);
+      }
+
+      updateMetrics(features, stimulus, driveValue);
+      updateTrail(features);
+      drawSoundspace(features, stimulus, { duration: durationEstimate, pitch: pitchEstimate });
+      drawGmm(charts.duration, durationModel, {
+        unit: 's',
+        color: 'rgba(245, 196, 107, 0.85)',
+      });
+      drawGmm(charts.pitch, pitchModel, {
+        unit: 'kHz',
+        color: 'rgba(121, 217, 247, 0.9)',
+      });
+      drawWaveform(features);
+    }
+
+    function updateMetrics(features, stimulus, driveValue) {
+      ui.pitchValue.textContent = `${features.pitchKHz.toFixed(2)} kHz`;
+      ui.durationValue.textContent = `${features.duration.toFixed(2)} s`;
+      ui.clusterValue.textContent = classifyCluster(features.duration, features.pitchKHz);
+      ui.driveValue.textContent = driveValue.toFixed(2);
+
+      ui.levelFill.style.width = `${Math.min(1, features.rms) * 100}%`;
+      ui.levelValue.textContent = features.rms.toFixed(3);
+
+      const durationError = Math.abs(features.duration - stimulus.duration);
+      const pitchError = Math.abs(features.pitchKHz - stimulus.pitchKHz);
+      const durationSim = similarity(durationError, 0.12, 0.05);
+      const pitchSim = similarity(pitchError, 1.0, 0.5);
+      const bias = clamp(pitchSim - durationSim, -1, 1);
+
+      ui.durationSimFill.style.width = `${durationSim * 100}%`;
+      ui.pitchSimFill.style.width = `${pitchSim * 100}%`;
+      ui.biasFill.style.width = `${(bias * 0.5 + 0.5) * 100}%`;
+      ui.durationSimVal.textContent = durationSim.toFixed(2);
+      ui.pitchSimVal.textContent = pitchSim.toFixed(2);
+      ui.biasVal.textContent = bias.toFixed(2);
+    }
+
+    function updateTrail(features) {
+      if (!state.inputActive && state.rmsSmooth < settings.gate * 0.6) {
+        return;
+      }
+      const x = mapDuration(features.duration, charts.soundspace.canvas.clientWidth);
+      const y = mapPitch(features.pitchKHz, charts.soundspace.canvas.clientHeight);
+      state.trail.push({ x, y, life: 1 });
+      if (state.trail.length > 80) {
+        state.trail.shift();
+      }
+      state.trail.forEach((point) => {
+        point.life -= 0.015;
+      });
+      state.trail = state.trail.filter((point) => point.life > 0);
+    }
+
+    function drawSoundspace(features, stimulus, model) {
+      const { ctx, canvas } = charts.soundspace;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = 38;
+      const plotW = width - pad * 2;
+      const plotH = height - pad * 2;
+
+      ctx.fillStyle = 'rgba(9, 12, 16, 0.9)';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+      ctx.translate(pad, pad);
+
+      const boundaryX = (constants.durationBoundary / settings.durationMax) * plotW;
+      const boundaryY = plotH - (constants.pitchBoundary / settings.pitchMax) * plotH;
+
+      ctx.fillStyle = 'rgba(245, 196, 107, 0.16)';
+      ctx.fillRect(0, boundaryY, boundaryX, plotH - boundaryY);
+      ctx.fillStyle = 'rgba(242, 141, 119, 0.15)';
+      ctx.fillRect(boundaryX, boundaryY, plotW - boundaryX, plotH - boundaryY);
+      ctx.fillStyle = 'rgba(121, 217, 247, 0.14)';
+      ctx.fillRect(0, 0, plotW, boundaryY);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, 0, plotW, plotH);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(boundaryX, 0);
+      ctx.lineTo(boundaryX, plotH);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, boundaryY);
+      ctx.lineTo(plotW, boundaryY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      for (let i = 1; i < 5; i += 1) {
+        const x = (plotW / 5) * i;
+        const y = (plotH / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, plotH);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(plotW, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.font = '12px "Space Grotesk", sans-serif';
+      ctx.fillText('Duration (s)', plotW * 0.35, plotH + 24);
+      ctx.save();
+      ctx.translate(-26, plotH * 0.55);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Pitch (kHz)', 0, 0);
+      ctx.restore();
+
+      if (state.trail.length > 0) {
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        state.trail.forEach((point, index) => {
+          const x = clamp(point.x - pad, 0, plotW);
+          const y = clamp(point.y - pad, 0, plotH);
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.strokeStyle = 'rgba(249, 216, 123, 0.35)';
+        ctx.stroke();
+
+        state.trail.forEach((point) => {
+          const x = clamp(point.x - pad, 0, plotW);
+          const y = clamp(point.y - pad, 0, plotH);
+          ctx.fillStyle = `rgba(249, 216, 123, ${point.life * 0.55})`;
+          ctx.beginPath();
+          ctx.arc(x, y, 4 * point.life, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      drawTargetMarker(ctx, plotW, plotH, stimulus);
+      drawModelMarker(ctx, plotW, plotH, model);
+      drawLiveMarker(ctx, plotW, plotH, features);
+
+      ctx.restore();
+    }
+
+    function drawTargetMarker(ctx, plotW, plotH, stimulus) {
+      const x = (stimulus.duration / settings.durationMax) * plotW;
+      const y = plotH - (stimulus.pitchKHz / settings.pitchMax) * plotH;
+      ctx.strokeStyle = 'rgba(255, 145, 124, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - 8, y);
+      ctx.lineTo(x + 8, y);
+      ctx.moveTo(x, y - 8);
+      ctx.lineTo(x, y + 8);
+      ctx.stroke();
+    }
+
+    function drawModelMarker(ctx, plotW, plotH, model) {
+      const x = (model.duration / settings.durationMax) * plotW;
+      const y = plotH - (model.pitch / settings.pitchMax) * plotH;
+      ctx.strokeStyle = 'rgba(123, 225, 255, 0.85)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function drawLiveMarker(ctx, plotW, plotH, features) {
+      const x = (features.duration / settings.durationMax) * plotW;
+      const y = plotH - (features.pitchKHz / settings.pitchMax) * plotH;
+      ctx.fillStyle = 'rgba(249, 216, 123, 0.95)';
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawGmm(chart, model, options) {
+      const { ctx, canvas } = chart;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.fillStyle = 'rgba(9, 12, 16, 0.9)';
+      ctx.fillRect(0, 0, width, height);
+
+      const pad = 24;
+      const plotW = width - pad * 2;
+      const plotH = height - pad * 2;
+
+      const barWidth = plotW / model.count;
+      for (let i = 0; i < model.count; i += 1) {
+        const weight = model.weights[i];
+        const base = model.baseWeights[i];
+        const x = pad + i * barWidth + barWidth * 0.15;
+        const barH = plotH * weight;
+        const baseH = plotH * base;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.fillRect(x, pad + (plotH - baseH), barWidth * 0.7, baseH);
+        ctx.fillStyle = options.color;
+        ctx.fillRect(x, pad + (plotH - barH), barWidth * 0.7, barH);
+      }
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '11px "Space Grotesk", sans-serif';
+      for (let i = 0; i < model.count; i += 1) {
+        const label = model.means[i].toFixed(options.unit === 's' ? 2 : 0);
+        const x = pad + i * barWidth + barWidth * 0.5;
+        ctx.fillText(label, x - 8, height - 10);
+      }
+    }
+
+    function drawWaveform(features) {
+      const { ctx, canvas } = charts.wave;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(9, 12, 16, 0.9)';
+      ctx.fillRect(0, 0, width, height);
+
+      if (!state.timeData) {
+        return;
+      }
+
+      ctx.strokeStyle = 'rgba(245, 196, 107, 0.85)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const slice = width / state.timeData.length;
+      for (let i = 0; i < state.timeData.length; i += 1) {
+        const v = (state.timeData[i] - 128) / 128;
+        const x = i * slice;
+        const y = height * 0.5 + v * height * 0.35;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(121, 217, 247, 0.6)';
+      ctx.fillRect(0, height - 18, width * Math.min(1, features.rms), 6);
+    }
+
+    function mapDuration(duration, width) {
+      const pad = 38;
+      const plotW = width - pad * 2;
+      return pad + (duration / settings.durationMax) * plotW;
+    }
+
+    function mapPitch(pitchKHz, height) {
+      const pad = 38;
+      const plotH = height - pad * 2;
+      return pad + (plotH - (pitchKHz / settings.pitchMax) * plotH);
+    }
+
+    function ema(prev, next, alpha) {
+      return alpha * next + (1 - alpha) * prev;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+  </script>
+</body>
+</html>
