@@ -1,7 +1,7 @@
 # Nightingale Whistle Matching Lab
 
-Current Biology 2026 논문(whistle matching in wild nightingales)의 핵심 아이디어를
-실시간 오디오 입력으로 시각화하는 단일 페이지 프로젝트입니다.
+Current Biology 2026 논문(whistle matching in wild nightingales)의 동작 이론을
+실시간 오디오 입력으로 시각화하는 단일 프로젝트입니다.
 사용자가 업로드한 새 울음(또는 마이크 입력)의 피치와 지속시간을 추적하고,
 논문에서 제시한 “Duration → Pitch” 계층 모델이 만들어내는 반응을 함께 보여줍니다.
 
